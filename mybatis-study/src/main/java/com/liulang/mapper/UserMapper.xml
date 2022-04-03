@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace 绑定一个对应的Dao/Mapper接口  作用就是通过实现类实现了这个绑定的接口-->
+<mapper namespace="com.liulang.mapper.UserMapper">
+    <!--
+        select查询语句
+        id 是必填项，对应接口中方法的名称,也就是实现类的要实现的方法的名称
+        resultType: 返回结果的类型，对应的就是实体类（注意这里要写全限定名）
+    -->
+    <select id="getUserList" resultType="com.liulang.pojo.User">
+        select * from mybatis.user;
+    </select>
+
+    <!--
+        parameterType:传入参数的类型
+        使用 #{} 来接收参数
+    -->
+    <select id="getUserById" parameterType="int" resultType="com.liulang.pojo.User">
+        select * from mybatis.user where id = #{id};
+    </select>
+
+    <select id="getUserNameById" parameterType="int" resultType="java.lang.String">
+        select name from mybatis.user where id = #{id};
+    </select>
+
+    <select id="getUserName" resultType="java.lang.String">
+        select name from user
+    </select>
+
+    <select id="getUserLike" resultType="com.liulang.pojo.User">
+        select * from  user where name like #{value}
+    </select>
+
+    <!--
+        insert 语句没有返回值，就不需要写了
+        这里对象中的属性可以直接取出来
+    -->
+    <insert id="addUser" parameterType="com.liulang.pojo.User">
+        insert into user (id, name, pwd ) values(#{id}, #{name}, #{pwd})
+    </insert>
+
+    <!--
+        这里使用的是万能map
+        之前参数类型是User的时候，如果要修改一个用户的密码，那么就需要定义一个User对象
+        并且将对应的每个字段都需要写上，字段名还需要和数据库中一致，如上所示。
+
+        使用map 后，传入的都是map的key,可以随意定义，这里修改一个用户的密码，只需要传入用户的ID
+        以及用户密码即可
+    -->
+    <insert id="addUser2" parameterType="map">
+        insert into user (id, pwd ) values(#{userId}, #{userPwd})
+    </insert>
+
+    <update id="updateUser" parameterType="com.liulang.pojo.User">
+        /*
+        这里直接使用 upd 可以直接生成固定格式
+        */
+        update user
+        set name = #{name}, pwd = #{pwd}
+        where id = #{id};
+    </update>
+
+    <!--这里如果参数类型是 int 的时候，可以不用写-->
+    <delete id="deleteUser">
+        delete
+        from user
+        where id = #{id};
+    </delete>
+</mapper>
