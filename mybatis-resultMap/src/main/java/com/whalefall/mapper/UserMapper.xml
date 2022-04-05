@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace 绑定一个对应的Dao/Mapper接口  作用就是通过实现类实现了这个绑定的接口-->
+<mapper namespace="com.whalefall.mapper.UserMapper">
+    <!--在这里进行数据库中的字段和实体类中属性的映射-->
+    <resultMap id="UserMap" type="User">
+        <!--column表示的是数据库中的字段-->
+        <!--properties表示的是实体类中的属性-->
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="pwd" property="password"/>
+    </resultMap>
+    <select id="getUserById" resultMap="UserMap">
+        select * from user where id = #{id};
+    </select>
+
+</mapper>

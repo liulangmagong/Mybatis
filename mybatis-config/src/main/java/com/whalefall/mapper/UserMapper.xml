@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace 绑定一个对应的Dao/Mapper接口  作用就是通过实现类实现了这个绑定的接口-->
+<mapper namespace="com.whalefall.mapper.UserMapper">
+    <select id="getUserList" resultType="User">
+        select * from user;
+    </select>
+
+    <select id="getUserById" parameterType="int" resultType="com.whalefall.pojo.User">
+        select * from user where id = #{id};
+    </select>
+
+    <insert id="addUser" parameterType="com.whalefall.pojo.User">
+        insert into user (id, name, pwd ) values(#{id}, #{name}, #{pwd})
+    </insert>
+
+    <update id="updateUser" parameterType="com.whalefall.pojo.User">
+        update user
+        set name = #{name}, pwd = #{pwd}
+        where id = #{id};
+    </update>
+
+    <delete id="deleteUser">
+        delete
+        from user
+        where id = #{id};
+    </delete>
+</mapper>

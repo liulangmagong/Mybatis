@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.whalefall.mapper.StudentMapper">
+    <!--方式二：按照结果嵌套处理-->
+    <!--第一步：写好查询的sql-->
+    <select id="getStudent2" resultMap="StudentTeacher2">
+        select s.id sid, s.name sname, t.name tname
+        from student s, teacher t
+        where s.tid = t.id;
+    </select>
+
+    <!--映射查询结果中的各项关系-->
+    <resultMap id="StudentTeacher2" type="Student">
+        <!--直接按照要查的结果类型Student的属性进行映射-->
+        <result property="id" column="sid"/>
+        <result property="name" column="sname"/>
+        <association property="teacher" javaType="Teacher">
+            <!--接下来对这个Teacher进行处理，嵌套一个result-->
+            <result property="name" column="tname"/>
+        </association>
+    </resultMap>
+
+
+    <!--======================================================-->
+    <!--方式一：按查询嵌套处理
+        思路：
+            1、查询所有学生的信息
+            2、根据查出来的学生的 tid,来寻找对应的老师
+    -->
+    <select id="getStudent" resultMap="StudentTeacher">
+        select *
+        from student
+    </select>
+
+    <resultMap id="StudentTeacher" type="Student">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <!--对于复杂的属性，我们需要单独处理
+            如果属性是一个对象：使用association
+                由于是一个对象，需要javaType来确定对象类型，即是哪个对象
+                根据tid没有办法直接拿到对象，所以这里后边根据tid 进行一个嵌套查询，
+            如果属性是一个集合：使用collection
+        -->
+        <association property="teacher" column="tid" javaType="Teacher" select="getTeacher"/>
+    </resultMap>
+
+    <select id="getTeacher" resultType="Teacher">
+        select *
+        from teacher
+        where id = #{tid}
+    </select>
+</mapper>
+
+

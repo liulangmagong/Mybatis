@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.whalefall.mapper.TeacherOneToMoreMapper">
+    <select id="getTeacher" resultType="TeacherOneToMore">
+        select * from teacher
+    </select>
+
+    <!--按照结果嵌套查询-->
+    <select id="getTeacher2" resultMap="TeacherStudent">
+        select s.id sid, s.name sname, t.name tname, t.id tid
+        from teacher t, student s
+        where s.tid = t.id and t.id = #{tid}
+    </select>
+    
+    <resultMap id="TeacherStudent" type="TeacherOneToMore">
+        <!--这里匹配的都是和TeacherOneToMore的属性相关的-->
+        <result property="id" column="tid"/>
+        <result property="name" column="tname"/>
+        <!--复杂的属性依旧是单独处理，对于是集合的属性，我们使用collection
+            javaType="StudentOneToMore"  指定属性类型，但这里是一个集合
+            所以使用 ofType 获取 集合的泛型类型
+        -->
+        <collection property="students" ofType="StudentOneToMore">
+            <!--这里再对学生的属性和字段进行对应-->
+            <result property="id" column="sid"/>
+            <result property="name" column="sname"/>
+            <result property="tid" column="tid"/>
+        </collection>
+    </resultMap>
+
+    <!--===============================================================-->
+    <select id="getTeacher3" resultMap="TeacherStudent2">
+        select * from teacher where id = #{tid}
+    </select>
+
+    <resultMap id="TeacherStudent2" type="TeacherOneToMore">
+        <result property="id" column="id"/>
+        <!--这里直接将老师的ID传到自查询语句中去 作为tid进行查询 -->
+        <collection property="students" javaType="ArrayList" ofType="StudentOneToMore" select="getStudentByTeacherId" column="id"/>
+    </resultMap>
+
+    <select id="getStudentByTeacherId" resultType="StudentOneToMore">
+        select *
+        from student
+        where tid = #{tid};
+    </select>
+</mapper>
+
+
